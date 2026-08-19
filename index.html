@@ -4,778 +4,249 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Work Progress Tracker Studio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #0f172a;
             --bg-card: #1e293b;
-            --bg-card-hover: #334155;
-            --bg-input: #0f172a;
             --border-color: #334155;
-            --border-focus: #6366f1;
-            
+            --primary: #6366f1;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --text-subtle: #64748b;
-            
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --accent-green: #10b981;
-            --accent-amber: #f59e0b;
-            --accent-rose: #f43f5e;
-            --accent-blue: #3b82f6;
-
-            --status-planned: #3b82f6;
-            --status-progress: #f59e0b;
-            --status-completed: #10b981;
-            --status-blocked: #f43f5e;
-            
-            --radius-lg: 16px;
-            --radius-md: 12px;
-            --radius-sm: 8px;
-            
-            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.2);
-            --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.25);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: var(--bg-dark); color: var(--text-main); padding: 24px; }
+        .studio-container { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+        
+        header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; }
+        .brand { display: flex; align-items: center; gap: 12px; }
+        .brand-icon { width: 40px; height: 40px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+        
+        .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 24px; }
+        @media (max-width: 1000px) { .main-grid { grid-template-columns: 1fr; } }
+        
+        .panel { background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 16px; }
+        
+        .task-form-box { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; background: #0f172a; padding: 16px; border-radius: 8px; border: 1px solid var(--border-color); }
+        @media (max-width: 700px) { .task-form-box { grid-template-columns: 1fr; } }
+        
+        .form-group { display: flex; flex-direction: column; gap: 4px; }
+        .form-group label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        
+        input, select { background: #1e293b; border: 1px solid var(--border-color); color: white; padding: 8px 12px; border-radius: 6px; outline: none; font-size: 13px; }
+        
+        .btn { padding: 8px 16px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-amber { background: #f59e0b; color: black; }
+        .btn-green { background: #10b981; color: white; }
+        .btn-secondary { background: #334155; color: white; }
+        .btn-danger { background: #f43f5e; color: white; padding: 4px 8px; font-size: 11px; }
 
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            min-height: 100vh;
-            padding: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
+        th { background: #0f172a; color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
 
-        .studio-container {
-            width: 100%;
-            max-width: 1400px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
-        }
-
-        /* Header */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color);
-            padding: 20px 28px;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .brand-icon {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, var(--primary), #818cf8);
-            border-radius: var(--radius-md);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            box-shadow: var(--shadow-glow);
-        }
-
-        .brand-text h1 {
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            background: linear-gradient(to right, #ffffff, #cbd5e1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .brand-text p {
-            font-size: 13px;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        /* Buttons */
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            padding: 10px 18px;
-            border-radius: var(--radius-md);
-            font-size: 14px;
-            font-weight: 600;
-            border: 1px solid transparent;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            outline: none;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
-            color: white;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--bg-card);
-            color: var(--text-main);
-            border-color: var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--bg-card-hover);
-            border-color: var(--text-muted);
-        }
-
-        .btn-amber {
-            background: rgba(245, 158, 11, 0.15);
-            color: #fbbf24;
-            border-color: rgba(245, 158, 11, 0.3);
-        }
-
-        .btn-amber:hover {
-            background: rgba(245, 158, 11, 0.25);
-        }
-
-        .btn-green {
-            background: rgba(16, 185, 129, 0.15);
-            color: #34d399;
-            border-color: rgba(16, 185, 129, 0.3);
-        }
-
-        .btn-green:hover {
-            background: rgba(16, 185, 129, 0.25);
-        }
-
-        .btn-sm {
-            padding: 6px 12px;
-            font-size: 12px;
-            border-radius: var(--radius-sm);
-        }
-
-        /* Main Grid */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 24px;
-        }
-
-        @media (max-width: 1100px) {
-            .main-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Task Panel */
-        .panel {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .panel-title {
-            font-size: 16px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .panel-title span {
-            color: var(--primary);
-        }
-
-        /* Input Form */
-        .task-form {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
-            gap: 12px;
-            background: rgba(15, 23, 42, 0.6);
-            padding: 16px;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-color);
-        }
-
-        @media (max-width: 768px) {
-            .task-form {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .form-group label {
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-        }
-
-        input, select, textarea {
-            background: var(--bg-input);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 14px;
-            border-radius: var(--radius-sm);
-            font-size: 13px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--border-focus);
-            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-        }
-
-        /* Checkbox styling */
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            height: 38px;
-            cursor: pointer;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: var(--primary);
-            cursor: pointer;
-        }
-
-        .checkbox-group span {
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-
-        /* Task List Table */
-        .table-container {
-            overflow-x: auto;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border-color);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 13px;
-        }
-
-        th {
-            background: rgba(15, 23, 42, 0.8);
-            padding: 12px 16px;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-size: 11px;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border-color);
-            vertical-align: middle;
-            background: var(--bg-card);
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        tr:hover td {
-            background: rgba(51, 65, 85, 0.3);
-        }
-
-        /* Priority Tag */
-        .badge-priority {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(245, 158, 11, 0.15);
-            color: #fbbf24;
-            padding: 3px 8px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-
-        /* Status Select/Badge */
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            border: 1px solid transparent;
-        }
-
-        .status-planned {
-            background: rgba(59, 130, 246, 0.15);
-            color: #60a5fa;
-            border-color: rgba(59, 130, 246, 0.3);
-        }
-
-        .status-in-progress {
-            background: rgba(245, 158, 11, 0.15);
-            color: #fbbf24;
-            border-color: rgba(245, 158, 11, 0.3);
-        }
-
-        .status-completed {
-            background: rgba(16, 185, 129, 0.15);
-            color: #34d399;
-            border-color: rgba(16, 185, 129, 0.3);
-        }
-
-        .status-blocked {
-            background: rgba(244, 63, 94, 0.15);
-            color: #f87171;
-            border-color: rgba(244, 63, 94, 0.3);
-        }
-
-        /* Timer Display */
-        .timer-display {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-main);
-            background: rgba(15, 23, 42, 0.5);
-            padding: 4px 8px;
-            border-radius: 4px;
-            display: inline-block;
-        }
-
-        /* Summary Output Card */
-        .bot-summary-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .card-title {
-            font-size: 15px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .bot-box {
-            background: #090d16;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-md);
-            padding: 16px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12.5px;
-            line-height: 1.6;
-            color: #cbd5e1;
-            white-space: pre-wrap;
-            min-height: 180px;
-            position: relative;
-        }
-
-        .empty-state {
-            color: var(--text-subtle);
-            font-style: italic;
-            text-align: center;
-            margin-top: 50px;
-        }
-
-        .action-cell {
-            display: flex;
-            gap: 6px;
-        }
-
-        .icon-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            cursor: pointer;
-            padding: 4px;
-            border-radius: 4px;
-            transition: color 0.2s;
-        }
-
-        .icon-btn:hover {
-            color: var(--text-main);
-            background: var(--bg-card-hover);
-        }
-
-        .icon-btn.danger:hover {
-            color: var(--accent-rose);
-        }
-
-        /* Modal / Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            background: var(--primary);
-            color: white;
-            padding: 12px 20px;
-            border-radius: var(--radius-md);
-            box-shadow: var(--shadow-lg);
-            font-weight: 600;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 1000;
-        }
-
-        .toast.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
+        .bot-box { background: #090d16; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: pre-wrap; min-height: 220px; color: #e2e8f0; line-height: 1.5; }
+        .badge-priority { background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+        .timer-badge { font-family: 'JetBrains Mono', monospace; background: #0f172a; padding: 4px 6px; border-radius: 4px; font-size: 11px; }
     </style>
 </head>
 <body>
 
 <div class="studio-container">
-    <!-- Top Header Bar -->
     <header>
         <div class="brand">
             <div class="brand-icon">⚡</div>
-            <div class="brand-text">
-                <h1>Work Progress Tracker Studio</h1>
-                <p>Task execution & Boss Bot Daily Check-in Generator</p>
+            <div>
+                <h2>Work Progress Tracker Studio</h2>
+                <p style="font-size: 12px; color: var(--text-muted);">Boss Bot Daily Check-in Generator</p>
             </div>
         </div>
-        <div class="header-actions">
-            <button class="btn btn-amber" onclick="generateMorningBot()">
-                🌅 Morning Check-in (9:30 AM)
-            </button>
-            <button class="btn btn-green" onclick="generateEveningBot()">
-                🌆 Evening Check-out (6:00 PM)
-            </button>
+        <div>
+            <button class="btn btn-amber" type="button" id="morning-btn">🌅 Morning Check-in (9:30 AM)</button>
+            <button class="btn btn-green" type="button" id="evening-btn">🌆 Evening Check-out (6:00 PM)</button>
         </div>
     </header>
 
-    <!-- Main Workspace -->
     <div class="main-grid">
-        
-        <!-- Left Column: Task Input & Tracker Table -->
         <div class="panel">
-            <div class="panel-header">
-                <div class="panel-title">
-                    <span>📋</span> Daily Task Board
-                </div>
-                <div style="font-size: 12px; color: var(--text-muted);" id="current-date-display"></div>
-            </div>
-
-            <!-- New Task Form -->
-            <form class="task-form" id="add-task-form" onsubmit="handleAddTask(event)">
+            <h3>📋 Daily Task Board</h3>
+            
+            <div class="task-form-box">
                 <div class="form-group" style="grid-column: span 2;">
-                    <label>Task Description</label>
-                    <input type="text" id="task-name" placeholder="What are you working on?" required>
+                    <label>Task Name</label>
+                    <input type="text" id="task-name" placeholder="What are you working on?">
                 </div>
                 <div class="form-group">
                     <label>Proof / Output Link</label>
-                    <input type="text" id="task-proof" placeholder="Link, PR, count or artifact">
+                    <input type="text" id="task-proof" placeholder="Link, PR, count or screenshot">
                 </div>
                 <div class="form-group" style="justify-content: flex-end;">
-                    <button type="submit" class="btn btn-primary" style="height: 38px;">
-                        + Add Task
-                    </button>
+                    <button class="btn btn-primary" type="button" id="add-btn">+ Add Task</button>
                 </div>
                 <div class="form-group" style="grid-column: span 2;">
-                    <label>Blockers / Notes (Optional)</label>
+                    <label>Blockers / Notes</label>
                     <input type="text" id="task-blocker" placeholder="Any issues blocking progress?">
                 </div>
                 <div class="form-group">
-                    <label>Priority Setting</label>
-                    <label class="checkbox-group">
-                        <input type="checkbox" id="task-priority">
-                        <span>⭐ Top Priority</span>
+                    <label>Priority</label>
+                    <label style="display:flex; align-items:center; gap:6px; margin-top:6px; font-size:12px; cursor:pointer;">
+                        <input type="checkbox" id="task-priority"> ⭐ Top Priority
                     </label>
                 </div>
-            </form>
-
-            <!-- Tasks Table -->
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 35%;">Task</th>
-                            <th style="width: 15%;">Status</th>
-                            <th style="width: 15%;">Time Spent</th>
-                            <th style="width: 20%;">Proof / Blocker</th>
-                            <th style="width: 15%; text-align: right;">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="task-list-body">
-                        <!-- Dynamic Content Rendered Here -->
-                    </tbody>
-                </table>
             </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">Task</th>
+                        <th style="width: 15%;">Status</th>
+                        <th style="width: 20%;">Timer</th>
+                        <th style="width: 20%;">Proof / Blocker</th>
+                        <th style="width: 10%;">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="task-table-body">
+                </tbody>
+            </table>
         </div>
 
-        <!-- Right Column: Bot Answer Generator Box -->
-        <div class="panel" style="background: rgba(30, 41, 59, 0.5);">
-            <div class="panel-header">
-                <div class="panel-title">
-                    <span>🤖</span> Boss Bot Format Output
-                </div>
-                <span style="font-size: 11px; background: rgba(99, 102, 241, 0.2); color: #818cf8; padding: 2px 8px; border-radius: 12px; font-weight: 600;">
-                    Ready to Copy
-                </span>
+        <div class="panel">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <h3 id="bot-title">🤖 Boss Bot Output</h3>
+                <button class="btn btn-secondary" type="button" id="copy-btn">📋 Copy Text</button>
             </div>
-
-            <!-- Bot Response Display Card -->
-            <div class="bot-summary-card">
-                <div class="card-header">
-                    <span id="bot-mode-title" class="card-title" style="color: #818cf8;">
-                        🌅 Morning Check-in Output
-                    </span>
-                    <button class="btn btn-secondary btn-sm" onclick="copyBotOutput()">
-                        📋 Copy Text
-                    </button>
-                </div>
-                <div class="bot-box" id="bot-output-text">
-                    <div class="empty-state">
-                        Click 'Morning Check-in' or 'Evening Check-out' above to generate formatted response for your boss bot.
-                    </div>
-                </div>
-            </div>
-            
-            <div style="font-size: 12px; color: var(--text-muted); line-height: 1.5; background: rgba(15, 23, 42, 0.4); padding: 12px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.05);">
-                <strong>💡 Quick Tip:</strong> Click <b>▶ Start</b> on any task to run live timer tracking. When done, click <b>⏹ Stop</b> to automatically update time spent and set status to Completed!
-            </div>
+            <div class="bot-box" id="bot-output">Add tasks on the left, then click 'Morning Check-in' or 'Evening Check-out' above.</div>
         </div>
-
     </div>
 </div>
 
-<!-- Toast Notification -->
-<div class="toast" id="toast">Copied to clipboard! 🚀</div>
-
 <script>
-    // Local State Management
-    let tasks = JSON.parse(localStorage.getItem('studio_tasks')) || [
-        {
-            id: 1,
-            name: "Complete Q3 Marketing Strategy Draft",
-            status: "In Progress",
-            priority: true,
-            proof: "https://docs.google.com/doc/sample",
-            blocker: "",
-            timeSpentSec: 2700,
-            timerRunning: false,
-            timerStartTimestamp: null
-        },
-        {
-            id: 2,
-            name: "Fix navigation bug on user dashboard",
-            status: "Planned",
-            priority: false,
-            proof: "PR #142",
-            blocker: "Waiting for design approval",
-            timeSpentSec: 0,
-            timerRunning: false,
-            timerStartTimestamp: null
-        }
-    ];
+    let tasks = [];
+    try {
+        tasks = JSON.parse(localStorage.getItem('studio_tasks_v2')) || [];
+    } catch(e) {
+        tasks = [];
+    }
 
-    let activeTab = 'morning'; // 'morning' | 'evening'
+    let activeTab = 'morning';
 
-    // Format Date Display
-    document.getElementById('current-date-display').innerText = new Date().toLocaleDateString('en-US', {
-        weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('add-btn').addEventListener('click', addNewTask);
+        document.getElementById('morning-btn').addEventListener('click', generateMorningBot);
+        document.getElementById('evening-btn').addEventListener('click', generateEveningBot);
+        document.getElementById('copy-btn').addEventListener('click', copyOutput);
+        
+        renderTable();
+        generateMorningBot();
     });
 
-    // Save & Render
-    function saveTasks() {
-        localStorage.setItem('studio_tasks', JSON.stringify(tasks));
-        renderTasks();
+    function saveAndRender() {
+        localStorage.setItem('studio_tasks_v2', JSON.stringify(tasks));
+        renderTable();
+        if (activeTab === 'morning') generateMorningBot();
+        else generateEveningBot();
     }
 
-    // Format Seconds into readable text
-    function formatTime(seconds) {
-        const hrs = Math.floor(seconds / 3600);
-        const mins = Math.floor((seconds % 3600) / 60);
-        const secs = seconds % 60;
-
-        if (hrs > 0) {
-            return `${hrs}h ${mins}m`;
-        }
-        if (mins > 0) {
-            return `${mins}m ${secs}s`;
-        }
-        return `${secs}s`;
-    }
-
-    // Add Task
-    function handleAddTask(e) {
-        e.preventDefault();
+    function addNewTask() {
         const nameInput = document.getElementById('task-name');
         const proofInput = document.getElementById('task-proof');
         const blockerInput = document.getElementById('task-blocker');
         const priorityInput = document.getElementById('task-priority');
 
+        const taskName = nameInput.value.trim();
+        if (!taskName) {
+            alert('Please type a task description first!');
+            return;
+        }
+
         const newTask = {
             id: Date.now(),
-            name: nameInput.value.trim(),
-            status: "Planned",
-            priority: priorityInput.checked,
+            name: taskName,
             proof: proofInput.value.trim(),
             blocker: blockerInput.value.trim(),
-            timeSpentSec: 0,
-            timerRunning: false,
-            timerStartTimestamp: null
+            priority: priorityInput.checked,
+            status: "Planned",
+            seconds: 0,
+            timerOn: false,
+            startTime: null
         };
 
         tasks.push(newTask);
-        saveTasks();
-
-        // Reset form
+        
         nameInput.value = '';
         proofInput.value = '';
         blockerInput.value = '';
         priorityInput.checked = false;
 
-        // Auto Refresh Bot Summary
-        if (activeTab === 'morning') generateMorningBot();
-        else generateEveningBot();
+        saveAndRender();
     }
 
-    // Toggle Timer
-    function toggleTimer(taskId) {
-        const task = tasks.find(t => t.id === taskId);
+    function toggleTimer(id) {
+        const task = tasks.find(t => t.id === id);
         if (!task) return;
 
-        if (task.timerRunning) {
-            // Stop timer
-            const elapsed = Math.floor((Date.now() - task.timerStartTimestamp) / 1000);
-            task.timeSpentSec += elapsed;
-            task.timerRunning = false;
-            task.timerStartTimestamp = null;
+        if (task.timerOn) {
+            const elapsed = Math.floor((Date.now() - task.startTime) / 1000);
+            task.seconds += elapsed;
+            task.timerOn = false;
+            task.startTime = null;
             task.status = "Completed";
         } else {
-            // Start timer
-            task.timerRunning = true;
-            task.timerStartTimestamp = Date.now();
+            task.timerOn = true;
+            task.startTime = Date.now();
             task.status = "In Progress";
         }
-
-        saveTasks();
-        if (activeTab === 'morning') generateMorningBot();
-        else generateEveningBot();
+        saveAndRender();
     }
 
-    // Update Status manually
-    function updateStatus(taskId, newStatus) {
-        const task = tasks.find(t => t.id === taskId);
+    function changeStatus(id, newStatus) {
+        const task = tasks.find(t => t.id === id);
         if (task) {
-            task.status = newStatus;
-            if (task.timerRunning && newStatus === "Completed") {
-                toggleTimer(taskId); // Stop timer if completed
+            if (task.timerOn && newStatus === "Completed") {
+                toggleTimer(id);
             } else {
-                saveTasks();
+                task.status = newStatus;
+                saveAndRender();
             }
-            if (activeTab === 'morning') generateMorningBot();
-            else generateEveningBot();
         }
     }
 
-    // Delete Task
-    function deleteTask(taskId) {
-        tasks = tasks.filter(t => t.id !== taskId);
-        saveTasks();
-        if (activeTab === 'morning') generateMorningBot();
-        else generateEveningBot();
+    function deleteTask(id) {
+        tasks = tasks.filter(t => t.id !== id);
+        saveAndRender();
     }
 
-    // Render Table
-    function renderTasks() {
-        const tbody = document.getElementById('task-list-body');
+    function formatSecs(sec) {
+        const m = Math.floor(sec / 60);
+        const s = sec % 60;
+        return m > 0 ? `${m}m ${s}s` : `${s}s`;
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById('task-table-body');
         tbody.innerHTML = '';
 
         if (tasks.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color: var(--text-muted); padding:24px;">No tasks logged for today yet. Add one above!</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b; padding:20px;">No tasks logged yet. Type a task above and click + Add Task.</td></tr>`;
             return;
         }
 
         tasks.forEach(task => {
-            const tr = document.createElement('tr');
-
-            // Calculate current live time if running
-            let currentSeconds = task.timeSpentSec;
-            if (task.timerRunning && task.timerStartTimestamp) {
-                currentSeconds += Math.floor((Date.now() - task.timerStartTimestamp) / 1000);
+            let currentSec = task.seconds;
+            if (task.timerOn && task.startTime) {
+                currentSec += Math.floor((Date.now() - task.startTime) / 1000);
             }
 
+            const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>
-                    <div style="font-weight: 600; font-size: 13.5px; display: flex; align-items: center; gap: 6px;">
-                        ${task.priority ? '<span class="badge-priority">⭐ Priority</span>' : ''}
-                        <span>${escapeHtml(task.name)}</span>
-                    </div>
+                    ${task.priority ? '<span class="badge-priority">⭐ PRIORITY</span> ' : ''}
+                    <strong>${escapeHtml(task.name)}</strong>
                 </td>
                 <td>
-                    <select onchange="updateStatus(${task.id}, this.value)" class="status-badge status-${task.status.toLowerCase().replace(' ', '-')}">
+                    <select onchange="changeStatus(${task.id}, this.value)" style="padding:4px; font-size:11px;">
                         <option value="Planned" ${task.status === 'Planned' ? 'selected' : ''}>Planned</option>
                         <option value="In Progress" ${task.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
                         <option value="Completed" ${task.status === 'Completed' ? 'selected' : ''}>Completed</option>
@@ -783,119 +254,71 @@
                     </select>
                 </td>
                 <td>
-                    <div style="display: flex; align-items: center; gap: 8px;">
-                        <span class="timer-display">${formatTime(currentSeconds)}</span>
-                        <button class="btn btn-sm ${task.timerRunning ? 'btn-amber' : 'btn-secondary'}" onclick="toggleTimer(${task.id})">
-                            ${task.timerRunning ? '⏹ Stop' : '▶ Start'}
-                        </button>
-                    </div>
+                    <span class="timer-badge">${formatSecs(currentSec)}</span>
+                    <button class="btn btn-secondary" style="padding:2px 6px; font-size:11px;" onclick="toggleTimer(${task.id})">
+                        ${task.timerOn ? '⏹ Stop' : '▶ Start'}
+                    </button>
+                </td>
+                <td style="font-size:11px; color:#94a3b8;">
+                    ${task.proof ? `<div>🔗 ${escapeHtml(task.proof)}</div>` : ''}
+                    ${task.blocker ? `<div style="color:#f43f5e;">⚠️ ${escapeHtml(task.blocker)}</div>` : ''}
+                    ${!task.proof && !task.blocker ? '-' : ''}
                 </td>
                 <td>
-                    <div style="font-size: 12px; color: var(--text-muted);">
-                        ${task.proof ? `<div>🔗 ${escapeHtml(task.proof)}</div>` : ''}
-                        ${task.blocker ? `<div style="color: var(--accent-rose);">⚠️ ${escapeHtml(task.blocker)}</div>` : ''}
-                        ${!task.proof && !task.blocker ? '<span style="color: var(--text-subtle);">-</span>' : ''}
-                    </div>
-                </td>
-                <td style="text-align: right;">
-                    <div class="action-cell" style="justify-content: flex-end;">
-                        <button class="icon-btn danger" onclick="deleteTask(${task.id})" title="Delete Task">🗑️</button>
-                    </div>
+                    <button class="btn btn-danger" onclick="deleteTask(${task.id})">Delete</button>
                 </td>
             `;
-
             tbody.appendChild(tr);
         });
     }
 
-    // Escape HTML to prevent XSS
-    function escapeHtml(str) {
-        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-    }
-
-    // Live update timers every second for smooth display
-    setInterval(() => {
-        let hasRunning = tasks.some(t => t.timerRunning);
-        if (hasRunning) {
-            renderTasks();
-        }
-    }, 1000);
-
-    // Bot Format Generators
     function generateMorningBot() {
         activeTab = 'morning';
-        document.getElementById('bot-mode-title').innerText = "🌅 Morning Check-in Output";
-        document.getElementById('bot-mode-title').style.color = "#fbbf24";
+        document.getElementById('bot-title').innerText = "🌅 Morning Check-in Output";
+        
+        const active = tasks.filter(t => t.status !== "Completed");
+        const priority = tasks.find(t => t.priority) || active[0];
+        const blocked = tasks.filter(t => t.status === "Blocked" || t.blocker);
 
-        const activeTasks = tasks.filter(t => t.status !== "Completed");
-        const priorityTask = tasks.find(t => t.priority) || activeTasks[0];
-        const blockedTasks = tasks.filter(t => t.status === "Blocked" || t.blocker);
+        let q1 = active.length ? active.map(t => `• ${t.name}`).join('\n') : "• Finishing up ongoing tasks";
+        let q2 = priority ? `• ${priority.name}` : "• Standard task flow";
+        let q3 = blocked.length ? blocked.map(t => `• ${t.name}: ${t.blocker || 'Blocked'}`).join('\n') : "None";
 
-        let q1 = activeTasks.length > 0 
-            ? activeTasks.slice(0, 4).map(t => `• ${t.name}`).join('\n')
-            : "• Finishing up ongoing tasks";
-
-        let q2 = priorityTask 
-            ? `• ${priorityTask.name}`
-            : "• Standard daily workload";
-
-        let q3 = blockedTasks.length > 0
-            ? blockedTasks.map(t => `• ${t.name}: ${t.blocker || 'Blocked'}`).join('\n')
-            : "None";
-
-        let result = `1. What are you working on today?\n${q1}\n\n2. Which one matters most if today gets cut short?\n${q2}\n\n3. Anything blocking you?\n${q3}`;
-
-        document.getElementById('bot-output-text').innerText = result;
+        const text = `1. What are you working on today?\n${q1}\n\n2. Which one matters most if today gets cut short?\n${q2}\n\n3. Anything blocking you?\n${q3}`;
+        document.getElementById('bot-output').innerText = text;
     }
 
     function generateEveningBot() {
         activeTab = 'evening';
-        document.getElementById('bot-mode-title').innerText = "🌆 Evening Check-out Output";
-        document.getElementById('bot-mode-title').style.color = "#34d399";
+        document.getElementById('bot-title').innerText = "集成 Evening Check-out Output";
+        
+        const done = tasks.filter(t => t.status === "Completed");
+        const carry = tasks.filter(t => t.status !== "Completed");
+        const proof = tasks.filter(t => t.proof);
 
-        const completedTasks = tasks.filter(t => t.status === "Completed");
-        const carryOverTasks = tasks.filter(t => t.status !== "Completed");
-        const proofTasks = tasks.filter(t => t.proof.trim() !== "");
+        let q1 = done.length ? done.map(t => `• ${t.name} (${formatSecs(t.seconds)})`).join('\n') : "• Progressed ongoing tasks";
+        let q2 = proof.length ? proof.map(t => `• ${t.name}: ${t.proof}`).join('\n') : "None";
+        let q3 = carry.length ? carry.map(t => `• ${t.name} [${t.status}]`).join('\n') : "Nothing carried over";
 
-        let q1 = completedTasks.length > 0
-            ? completedTasks.map(t => `• ${t.name} (${formatTime(t.timeSpentSec)})`).join('\n')
-            : "• Progressed ongoing tasks";
-
-        let q2 = proofTasks.length > 0
-            ? proofTasks.map(t => `• ${t.name}: ${t.proof}`).join('\n')
-            : "None";
-
-        let q3 = carryOverTasks.length > 0
-            ? carryOverTasks.map(t => `• ${t.name} [${t.status}]`).join('\n')
-            : "Nothing carried over";
-
-        let result = `1. What did you get done today?\n${q1}\n\n2. Anything to show for it?\n${q2}\n\n3. What's carrying over to tomorrow, if anything?\n${q3}`;
-
-        document.getElementById('bot-output-text').innerText = result;
+        const text = `1. What did you get done today?\n${q1}\n\n2. Anything to show for it?\n${q2}\n\n3. What's carrying over to tomorrow, if anything?\n${q3}`;
+        document.getElementById('bot-output').innerText = text;
     }
 
-    // Copy to Clipboard
-    function copyBotOutput() {
-        const text = document.getElementById('bot-output-text').innerText;
-        if (!text || text.includes('Click \'Morning Check-in\'')) return;
-
-        navigator.clipboard.writeText(text).then(() => {
-            showToast("Copied bot summary to clipboard! 🚀");
-        });
+    function copyOutput() {
+        const text = document.getElementById('bot-output').innerText;
+        navigator.clipboard.writeText(text);
+        alert('Copied check-in summary to clipboard! 🚀');
     }
 
-    function showToast(message) {
-        const toast = document.getElementById('toast');
-        toast.innerText = message;
-        toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 2500);
+    function escapeHtml(str) {
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    // Initial Load
-    renderTasks();
-    generateMorningBot();
+    setInterval(() => {
+        if (tasks.some(t => t.timerOn)) {
+            renderTable();
+        }
+    }, 1000);
 </script>
 </body>
 </html>
