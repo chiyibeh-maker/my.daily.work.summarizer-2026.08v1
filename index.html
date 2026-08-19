@@ -17,24 +17,24 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background: var(--bg-dark); color: var(--text-main); padding: 24px; }
-        .studio-container { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+        .studio-container { max-width: 1450px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
         
-        header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; }
+        header { display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); border: 1px solid var(--border-color); padding: 18px 24px; border-radius: 12px; }
         .brand { display: flex; align-items: center; gap: 12px; }
         .brand-icon { width: 40px; height: 40px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
         
-        .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 24px; }
-        @media (max-width: 1000px) { .main-grid { grid-template-columns: 1fr; } }
+        .main-grid { display: grid; grid-template-columns: 1fr 450px; gap: 20px; }
+        @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
         
         .panel { background: var(--bg-card); border: 1px solid var(--border-color); padding: 20px; border-radius: 12px; display: flex; flex-direction: column; gap: 16px; }
         
-        .task-form-box { display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 10px; background: #0f172a; padding: 16px; border-radius: 8px; border: 1px solid var(--border-color); }
+        .task-form-box { display: grid; grid-template-columns: 1fr 1.5fr 1fr auto; gap: 10px; background: #0f172a; padding: 16px; border-radius: 8px; border: 1px solid var(--border-color); }
         @media (max-width: 700px) { .task-form-box { grid-template-columns: 1fr; } }
         
         .form-group { display: flex; flex-direction: column; gap: 4px; }
         .form-group label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
         
-        input, select { background: #1e293b; border: 1px solid var(--border-color); color: white; padding: 8px 12px; border-radius: 6px; outline: none; font-size: 13px; }
+        input, select, textarea { background: #1e293b; border: 1px solid var(--border-color); color: white; padding: 8px 12px; border-radius: 6px; outline: none; font-size: 13px; }
         
         .btn { padding: 8px 16px; border-radius: 6px; border: none; font-weight: 600; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
         .btn-primary { background: var(--primary); color: white; }
@@ -47,9 +47,12 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
         th { background: #0f172a; color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
 
-        .bot-box { background: #090d16; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: pre-wrap; min-height: 220px; color: #e2e8f0; line-height: 1.5; }
+        .bot-box { background: #090d16; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: pre-wrap; min-height: 300px; color: #e2e8f0; line-height: 1.6; }
         .badge-priority { background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; }
         .timer-badge { font-family: 'JetBrains Mono', monospace; background: #0f172a; padding: 4px 6px; border-radius: 4px; font-size: 11px; }
+        .category-tag { background: #334155; color: #cbd5e1; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+        
+        .category-manager { display: flex; gap: 8px; align-items: center; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -60,39 +63,51 @@
             <div class="brand-icon">⚡</div>
             <div>
                 <h2>Work Progress Tracker Studio</h2>
-                <p style="font-size: 12px; color: var(--text-muted);">Boss Bot Daily Check-in Generator</p>
+                <p style="font-size: 12px; color: var(--text-muted);">Context-Aware Personal Assistant Reporting Suite</p>
             </div>
         </div>
         <div>
-            <button class="btn btn-amber" type="button" id="morning-btn">🌅 Morning Check-in (9:30 AM)</button>
-            <button class="btn btn-green" type="button" id="evening-btn">🌆 Evening Check-out (6:00 PM)</button>
+            <button class="btn btn-amber" type="button" id="morning-btn">🌅 Morning Check-in</button>
+            <button class="btn btn-green" type="button" id="evening-btn">🌆 Evening Check-out</button>
         </div>
     </header>
 
     <div class="main-grid">
         <div class="panel">
-            <h3>📋 Daily Task Board</h3>
+            <h3>📋 Daily Execution Board</h3>
             
+            <!-- Category Management Bar -->
+            <div class="category-manager">
+                <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Manage Categories:</span>
+                <input type="text" id="new-cat-input" placeholder="e.g. Marketing, HR, Legal..." style="width: 200px;">
+                <button class="btn btn-secondary" type="button" id="add-cat-btn" style="padding: 6px 12px; font-size: 11px;">+ Add Pillar</button>
+            </div>
+
+            <!-- Task Input Form -->
             <div class="task-form-box">
-                <div class="form-group" style="grid-column: span 2;">
-                    <label>Task Name</label>
-                    <input type="text" id="task-name" placeholder="What are you working on?">
+                <div class="form-group">
+                    <label>Category / Pillar</label>
+                    <select id="task-category"></select>
+                </div>
+                <div class="form-group">
+                    <label>Task Description & Context</label>
+                    <input type="text" id="task-name" placeholder="Task summary & execution details...">
                 </div>
                 <div class="form-group">
                     <label>Proof / Output Link</label>
-                    <input type="text" id="task-proof" placeholder="Link, PR, count or screenshot">
+                    <input type="text" id="task-proof" placeholder="PR, link, artifact or outcome...">
                 </div>
                 <div class="form-group" style="justify-content: flex-end;">
                     <button class="btn btn-primary" type="button" id="add-btn">+ Add Task</button>
                 </div>
                 <div class="form-group" style="grid-column: span 2;">
-                    <label>Blockers / Notes</label>
-                    <input type="text" id="task-blocker" placeholder="Any issues blocking progress?">
+                    <label>Blocker / Next Step / Note</label>
+                    <input type="text" id="task-blocker" placeholder="e.g. Wait for deposit cash from Kenny, pending quotation...">
                 </div>
-                <div class="form-group">
-                    <label>Priority</label>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>Priority Flag</label>
                     <label style="display:flex; align-items:center; gap:6px; margin-top:6px; font-size:12px; cursor:pointer;">
-                        <input type="checkbox" id="task-priority"> ⭐ Top Priority
+                        <input type="checkbox" id="task-priority"> ⭐ High Priority (Matters most if day cut short)
                     </label>
                 </div>
             </div>
@@ -100,69 +115,115 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 35%;">Task</th>
+                        <th style="width: 20%;">Category</th>
+                        <th style="width: 35%;">Task & Details</th>
                         <th style="width: 15%;">Status</th>
-                        <th style="width: 20%;">Timer</th>
-                        <th style="width: 20%;">Proof / Blocker</th>
-                        <th style="width: 10%;">Action</th>
+                        <th style="width: 15%;">Timer</th>
+                        <th style="width: 15%;">Action</th>
                     </tr>
                 </thead>
-                <tbody id="task-table-body">
-                </tbody>
+                <tbody id="task-table-body"></tbody>
             </table>
         </div>
 
+        <!-- Right Side Bot Generator -->
         <div class="panel">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3 id="bot-title">🤖 Boss Bot Output</h3>
                 <button class="btn btn-secondary" type="button" id="copy-btn">📋 Copy Text</button>
             </div>
-            <div class="bot-box" id="bot-output">Add tasks on the left, then click 'Morning Check-in' or 'Evening Check-out' above.</div>
+
+            <div class="form-group">
+                <label>Q2 Context Override (What matters / Anything to show?)</label>
+                <input type="text" id="q2-override" placeholder="e.g. None to show. Main concern is check-in efficiency...">
+            </div>
+
+            <div class="form-group">
+                <label>Q3 Context Override (Blockers / Carry-over situational note)</label>
+                <input type="text" id="q3-override" placeholder="e.g. Nothing can stop me moving forward, only time matters.">
+            </div>
+
+            <div class="bot-box" id="bot-output">Add tasks on the left board, then click Morning or Evening check-in button.</div>
         </div>
     </div>
 </div>
 
 <script>
-    let tasks = [];
-    try {
-        tasks = JSON.parse(localStorage.getItem('studio_tasks_v2')) || [];
-    } catch(e) {
-        tasks = [];
-    }
+    let categories = JSON.parse(localStorage.getItem('studio_categories')) || [
+        "Daily Operations",
+        "Property Management",
+        "G Project",
+        "MSC",
+        "General Tasks"
+    ];
 
+    let tasks = JSON.parse(localStorage.getItem('studio_tasks_v4')) || [];
     let activeTab = 'morning';
 
     document.addEventListener('DOMContentLoaded', function() {
+        populateCategories();
+        document.getElementById('add-cat-btn').addEventListener('click', addCategory);
         document.getElementById('add-btn').addEventListener('click', addNewTask);
         document.getElementById('morning-btn').addEventListener('click', generateMorningBot);
         document.getElementById('evening-btn').addEventListener('click', generateEveningBot);
         document.getElementById('copy-btn').addEventListener('click', copyOutput);
         
+        document.getElementById('q2-override').addEventListener('input', refreshOutput);
+        document.getElementById('q3-override').addEventListener('input', refreshOutput);
+        
         renderTable();
         generateMorningBot();
     });
 
+    function populateCategories() {
+        const catSelect = document.getElementById('task-category');
+        catSelect.innerHTML = '';
+        categories.forEach((cat, index) => {
+            const letter = String.fromCharCode(65 + index);
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.textContent = `${letter}. ${cat}`;
+            catSelect.appendChild(opt);
+        });
+    }
+
+    function addCategory() {
+        const input = document.getElementById('new-cat-input');
+        const catName = input.value.trim();
+        if (!catName) return alert('Enter a category name!');
+        if (!categories.includes(catName)) {
+            categories.push(catName);
+            localStorage.setItem('studio_categories', JSON.stringify(categories));
+            populateCategories();
+            input.value = '';
+            alert(`Added new pillar: ${catName}`);
+        }
+    }
+
     function saveAndRender() {
-        localStorage.setItem('studio_tasks_v2', JSON.stringify(tasks));
+        localStorage.setItem('studio_tasks_v4', JSON.stringify(tasks));
         renderTable();
+        refreshOutput();
+    }
+
+    function refreshOutput() {
         if (activeTab === 'morning') generateMorningBot();
         else generateEveningBot();
     }
 
     function addNewTask() {
+        const catInput = document.getElementById('task-category');
         const nameInput = document.getElementById('task-name');
         const proofInput = document.getElementById('task-proof');
         const blockerInput = document.getElementById('task-blocker');
         const priorityInput = document.getElementById('task-priority');
 
         const taskName = nameInput.value.trim();
-        if (!taskName) {
-            alert('Please type a task description first!');
-            return;
-        }
+        if (!taskName) return alert('Please enter task details!');
 
         const newTask = {
             id: Date.now(),
+            category: catInput.value,
             name: taskName,
             proof: proofInput.value.trim(),
             blocker: blockerInput.value.trim(),
@@ -174,7 +235,6 @@
         };
 
         tasks.push(newTask);
-        
         nameInput.value = '';
         proofInput.value = '';
         blockerInput.value = '';
@@ -229,7 +289,7 @@
         tbody.innerHTML = '';
 
         if (tasks.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b; padding:20px;">No tasks logged yet. Type a task above and click + Add Task.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b; padding:20px;">No tasks logged. Add one above!</td></tr>`;
             return;
         }
 
@@ -241,9 +301,12 @@
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
+                <td><span class="category-tag">${escapeHtml(task.category)}</span></td>
                 <td>
                     ${task.priority ? '<span class="badge-priority">⭐ PRIORITY</span> ' : ''}
                     <strong>${escapeHtml(task.name)}</strong>
+                    ${task.proof ? `<div style="font-size:11px; color:#94a3b8;">🔗 ${escapeHtml(task.proof)}</div>` : ''}
+                    ${task.blocker ? `<div style="font-size:11px; color:#f43f5e;">⚠️ ${escapeHtml(task.blocker)}</div>` : ''}
                 </td>
                 <td>
                     <select onchange="changeStatus(${task.id}, this.value)" style="padding:4px; font-size:11px;">
@@ -259,48 +322,77 @@
                         ${task.timerOn ? '⏹ Stop' : '▶ Start'}
                     </button>
                 </td>
-                <td style="font-size:11px; color:#94a3b8;">
-                    ${task.proof ? `<div>🔗 ${escapeHtml(task.proof)}</div>` : ''}
-                    ${task.blocker ? `<div style="color:#f43f5e;">⚠️ ${escapeHtml(task.blocker)}</div>` : ''}
-                    ${!task.proof && !task.blocker ? '-' : ''}
-                </td>
-                <td>
-                    <button class="btn btn-danger" onclick="deleteTask(${task.id})">Delete</button>
-                </td>
+                <td><button class="btn btn-danger" onclick="deleteTask(${task.id})">Delete</button></td>
             `;
             tbody.appendChild(tr);
         });
     }
 
+    function getFormattedDate() {
+        const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+        return new Date().toLocaleDateString('en-GB', options);
+    }
+
     function generateMorningBot() {
         activeTab = 'morning';
         document.getElementById('bot-title').innerText = "🌅 Morning Check-in Output";
-        
+        const q2Override = document.getElementById('q2-override').value.trim();
+        const q3Override = document.getElementById('q3-override').value.trim();
+
         const active = tasks.filter(t => t.status !== "Completed");
         const priority = tasks.find(t => t.priority) || active[0];
         const blocked = tasks.filter(t => t.status === "Blocked" || t.blocker);
 
-        let q1 = active.length ? active.map(t => `• ${t.name}`).join('\n') : "• Finishing up ongoing tasks";
-        let q2 = priority ? `• ${priority.name}` : "• Standard task flow";
-        let q3 = blocked.length ? blocked.map(t => `• ${t.name}: ${t.blocker || 'Blocked'}`).join('\n') : "None";
+        let grouped = {};
+        active.forEach(t => {
+            if (!grouped[t.category]) grouped[t.category] = [];
+            grouped[t.category].push(t);
+        });
 
-        const text = `1. What are you working on today?\n${q1}\n\n2. Which one matters most if today gets cut short?\n${q2}\n\n3. Anything blocking you?\n${q3}`;
+        let q1Text = "";
+        categories.forEach((cat, idx) => {
+            if (grouped[cat] && grouped[cat].length > 0) {
+                const letter = String.fromCharCode(65 + idx);
+                q1Text += `${letter}. ${cat}\n`;
+                grouped[cat].forEach(item => {
+                    q1Text += `• ${item.name}${item.blocker ? ' - ' + item.blocker : ''}\n`;
+                });
+                q1Text += `\n`;
+            }
+        });
+
+        if (!q1Text) q1Text = "• Continuing daily operations and execution workflow.\n";
+
+        let q2Text = q2Override ? q2Override : (priority ? `• ${priority.category}: ${priority.name}` : "• Standard task flow.");
+        let q3Text = q3Override ? q3Override : (blocked.length ? blocked.map(t => `• ${t.name}: ${t.blocker || 'Blocked'}`).join('\n') : "Nothing can stop me moving forward, only time matters.");
+
+        const text = `Morning Check-In | ${getFormattedDate()}\n\n1. What are you working on today?\n\n${q1Text.trim()}\n\n2. Which one matters most if today gets cut short?\n${q2Text}\n\n3. Anything blocking you?\n${q3Text}`;
         document.getElementById('bot-output').innerText = text;
     }
 
     function generateEveningBot() {
         activeTab = 'evening';
-        document.getElementById('bot-title').innerText = "集成 Evening Check-out Output";
-        
+        document.getElementById('bot-title').innerText = "🌆 Evening Check-out Output";
+        const q2Override = document.getElementById('q2-override').value.trim();
+        const q3Override = document.getElementById('q3-override').value.trim();
+
         const done = tasks.filter(t => t.status === "Completed");
         const carry = tasks.filter(t => t.status !== "Completed");
         const proof = tasks.filter(t => t.proof);
 
-        let q1 = done.length ? done.map(t => `• ${t.name} (${formatSecs(t.seconds)})`).join('\n') : "• Progressed ongoing tasks";
-        let q2 = proof.length ? proof.map(t => `• ${t.name}: ${t.proof}`).join('\n') : "None";
-        let q3 = carry.length ? carry.map(t => `• ${t.name} [${t.status}]`).join('\n') : "Nothing carried over";
+        let q1Text = done.length 
+            ? done.map(t => `• ${t.name}${t.seconds ? ' (' + formatSecs(t.seconds) + ')' : ''}`).join('\n') 
+            : "• Progressed ongoing daily tasks & operations.";
 
-        const text = `1. What did you get done today?\n${q1}\n\n2. Anything to show for it?\n${q2}\n\n3. What's carrying over to tomorrow, if anything?\n${q3}`;
+        let q2Text = q2Override 
+            ? q2Override 
+            : (proof.length ? proof.map(t => `• ${t.name}: ${t.proof}`).join('\n') : "None to show.");
+
+        let q3Text = q3Override 
+            ? q3Override 
+            : (carry.length ? carry.map(t => `• ${t.name} ${t.blocker ? '(' + t.blocker + ')' : ''}`).join('\n') : "Nothing carried over.");
+
+        const text = `Evening Check-Out | ${getFormattedDate()}\n\n1. What did you get done today?\n${q1Text}\n\n2. Anything to show for it?\n${q2Text}\n\n3. What's carrying over to tomorrow, if anything?\n${q3Text}`;
         document.getElementById('bot-output').innerText = text;
     }
 
@@ -315,9 +407,7 @@
     }
 
     setInterval(() => {
-        if (tasks.some(t => t.timerOn)) {
-            renderTable();
-        }
+        if (tasks.some(t => t.timerOn)) renderTable();
     }, 1000);
 </script>
 </body>
