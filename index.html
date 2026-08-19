@@ -23,6 +23,11 @@
         .brand { display: flex; align-items: center; gap: 12px; }
         .brand-icon { width: 40px; height: 40px; background: var(--primary); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
         
+        .clock-badge { font-family: 'JetBrains Mono', monospace; background: #0f172a; color: #38bdf8; border: 1px solid #0284c7; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+        .user-section { display: flex; align-items: center; gap: 12px; background: #0f172a; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border-color); }
+
+        .motto-banner { background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(16, 185, 129, 0.15)); border: 1px solid rgba(99, 102, 241, 0.3); padding: 10px 16px; border-radius: 8px; font-size: 12px; color: #cbd5e1; display: flex; align-items: center; justify-content: space-between; }
+
         .main-grid { display: grid; grid-template-columns: 1fr 450px; gap: 20px; }
         @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
         
@@ -47,12 +52,15 @@
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border-color); }
         th { background: #0f172a; color: var(--text-muted); font-size: 11px; text-transform: uppercase; }
 
-        .bot-box { background: #090d16; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: pre-wrap; min-height: 300px; color: #e2e8f0; line-height: 1.6; }
+        .bot-box { background: #090d16; border: 1px solid var(--border-color); border-radius: 8px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; white-space: pre-wrap; min-height: 280px; color: #e2e8f0; line-height: 1.6; }
         .badge-priority { background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; }
         .timer-badge { font-family: 'JetBrains Mono', monospace; background: #0f172a; padding: 4px 6px; border-radius: 4px; font-size: 11px; }
         .category-tag { background: #334155; color: #cbd5e1; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 600; }
         
         .category-manager { display: flex; gap: 8px; align-items: center; background: #0f172a; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 8px; }
+        
+        .history-card { background: #0f172a; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-top: 8px; font-size: 12px; }
+        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
     </style>
 </head>
 <body>
@@ -63,27 +71,40 @@
             <div class="brand-icon">⚡</div>
             <div>
                 <h2>Work Progress Tracker Studio</h2>
-                <p style="font-size: 12px; color: var(--text-muted);">Context-Aware Personal Assistant Reporting Suite</p>
+                <p style="font-size: 12px; color: var(--text-muted);">Executive Suite with Malaysia Live Time & 300-Day Archive</p>
             </div>
         </div>
+
+        <div class="clock-badge" id="myt-clock">🕒 GMT+8 MYT Loading...</div>
+
+        <div class="user-section">
+            <span style="font-size: 12px; font-weight: 700; color: var(--text-muted);">👤 USER:</span>
+            <select id="user-select" style="width: 140px;"></select>
+            <button class="btn btn-secondary" type="button" id="new-user-btn" style="padding: 4px 8px; font-size: 11px;">+ Add User</button>
+        </div>
+
         <div>
             <button class="btn btn-amber" type="button" id="morning-btn">🌅 Morning Check-in</button>
-            <button class="btn btn-green" type="button" id="evening-btn">🌆 Evening Check-out</button>
+            <button class="btn btn-green" type="button" id="evening-btn">🌙 Evening Check-out</button>
         </div>
     </header>
+
+    <!-- Quote & Motto Banner -->
+    <div class="motto-banner">
+        <div>💡 <strong>Daily Executive Motto:</strong> <span id="motto-text">"Focus on being productive instead of busy."</span></div>
+        <button class="btn btn-secondary" type="button" id="next-motto-btn" style="padding: 2px 8px; font-size: 10px;">⚡ Next Quote</button>
+    </div>
 
     <div class="main-grid">
         <div class="panel">
             <h3>📋 Daily Execution Board</h3>
             
-            <!-- Category Management Bar -->
             <div class="category-manager">
                 <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Manage Categories:</span>
                 <input type="text" id="new-cat-input" placeholder="e.g. Marketing, HR, Legal..." style="width: 200px;">
                 <button class="btn btn-secondary" type="button" id="add-cat-btn" style="padding: 6px 12px; font-size: 11px;">+ Add Pillar</button>
             </div>
 
-            <!-- Task Input Form -->
             <div class="task-form-box">
                 <div class="form-group">
                     <label>Category / Pillar</label>
@@ -101,8 +122,8 @@
                     <button class="btn btn-primary" type="button" id="add-btn">+ Add Task</button>
                 </div>
                 <div class="form-group" style="grid-column: span 2;">
-                    <label>Blocker / Next Step / Note</label>
-                    <input type="text" id="task-blocker" placeholder="e.g. Wait for deposit cash from Kenny, pending quotation...">
+                    <label>Blocker / Next Step / Status Note</label>
+                    <input type="text" id="task-blocker" placeholder="e.g. Need cash from Kenny, awaiting response...">
                 </div>
                 <div class="form-group" style="grid-column: span 2;">
                     <label>Priority Flag</label>
@@ -126,54 +147,162 @@
             </table>
         </div>
 
-        <!-- Right Side Bot Generator -->
         <div class="panel">
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3 id="bot-title">🤖 Boss Bot Output</h3>
-                <button class="btn btn-secondary" type="button" id="copy-btn">📋 Copy Text</button>
+                <div style="display:flex; gap:6px;">
+                    <button class="btn btn-secondary" type="button" id="copy-btn">📋 Copy</button>
+                    <button class="btn btn-primary" type="button" id="save-history-btn" style="font-size:11px;">💾 Save Report</button>
+                </div>
             </div>
 
             <div class="form-group">
-                <label>Q2 Context Override (What matters / Anything to show?)</label>
-                <input type="text" id="q2-override" placeholder="e.g. None to show. Main concern is check-in efficiency...">
+                <label>Q2 Override (Custom Context / Remarks)</label>
+                <input type="text" id="q2-override" placeholder="e.g. None to show. Main concern is time-consuming check-in...">
             </div>
 
             <div class="form-group">
-                <label>Q3 Context Override (Blockers / Carry-over situational note)</label>
-                <input type="text" id="q3-override" placeholder="e.g. Nothing can stop me moving forward, only time matters.">
+                <label>Q3 Override (Custom Carry-over Notes)</label>
+                <input type="text" id="q3-override" placeholder="e.g. Push Kenny for deposit return payments...">
             </div>
 
-            <div class="bot-box" id="bot-output">Add tasks on the left board, then click Morning or Evening check-in button.</div>
+            <div class="bot-box" id="bot-output">Add tasks on the left board, then click Morning or Evening button.</div>
+
+            <h4 style="margin-top: 12px; font-size: 13px; border-top: 1px solid var(--border-color); padding-top: 12px;">📁 300-Day History Archive</h4>
+            <div id="history-container" style="max-height: 220px; overflow-y: auto;"></div>
         </div>
     </div>
 </div>
 
 <script>
-    let categories = JSON.parse(localStorage.getItem('studio_categories')) || [
-        "Daily Operations",
-        "Property Management",
-        "G Project",
-        "MSC",
-        "General Tasks"
+    const mottos = [
+        "Focus on being productive instead of busy.",
+        "Time is non-refundable, spend it on high impact.",
+        "Precision in execution builds unstoppable momentum.",
+        "Nothing can stop me moving forward, only time matters.",
+        "Small daily gains make massive long-term success.",
+        "Clarity of vision removes efficiency bottlenecks."
     ];
+    let mottoIdx = 0;
 
-    let tasks = JSON.parse(localStorage.getItem('studio_tasks_v4')) || [];
+    let users = JSON.parse(localStorage.getItem('studio_users_v5')) || [
+        "User 1", "User 2", "User 3", "User 4", "User 5",
+        "User 6", "User 7", "User 8", "User 9", "User 10"
+    ];
+    let currentUser = localStorage.getItem('studio_active_user_v5') || users[0];
+
+    let categories = [];
+    let tasks = [];
+    let historyLogs = [];
     let activeTab = 'morning';
 
     document.addEventListener('DOMContentLoaded', function() {
-        populateCategories();
+        startMalaysiaClock();
+        setupUsers();
+        loadUserData();
+
+        document.getElementById('next-motto-btn').addEventListener('click', rotateMotto);
+        document.getElementById('new-user-btn').addEventListener('click', createNewUser);
+        document.getElementById('user-select').addEventListener('change', switchUser);
         document.getElementById('add-cat-btn').addEventListener('click', addCategory);
         document.getElementById('add-btn').addEventListener('click', addNewTask);
         document.getElementById('morning-btn').addEventListener('click', generateMorningBot);
         document.getElementById('evening-btn').addEventListener('click', generateEveningBot);
         document.getElementById('copy-btn').addEventListener('click', copyOutput);
-        
+        document.getElementById('save-history-btn').addEventListener('click', saveToHistory);
+
         document.getElementById('q2-override').addEventListener('input', refreshOutput);
         document.getElementById('q3-override').addEventListener('input', refreshOutput);
-        
+
         renderTable();
+        renderHistory();
         generateMorningBot();
     });
+
+    function startMalaysiaClock() {
+        function updateClock() {
+            const now = new Date();
+            const options = {
+                timeZone: 'Asia/Kuala_Lumpur',
+                weekday: 'short',
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true
+            };
+            const mytString = new Intl.DateTimeFormat('en-GB', options).format(now);
+            document.getElementById('myt-clock').innerText = `🕒 MYT (GMT+8): ${mytString}`;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+    }
+
+    function rotateMotto() {
+        mottoIdx = (mottoIdx + 1) % mottos.length;
+        document.getElementById('motto-text').innerText = `"${mottos[mottoIdx]}"`;
+        refreshOutput();
+    }
+
+    function setupUsers() {
+        const userSelect = document.getElementById('user-select');
+        userSelect.innerHTML = '';
+        users.forEach(u => {
+            const opt = document.createElement('option');
+            opt.value = u;
+            opt.textContent = u;
+            if (u === currentUser) opt.selected = true;
+            userSelect.appendChild(opt);
+        });
+    }
+
+    function createNewUser() {
+        const name = prompt("Enter new user/employee name:");
+        if (!name || name.trim() === "") return;
+        const cleanName = name.trim();
+        if (!users.includes(cleanName)) {
+            users.push(cleanName);
+            localStorage.setItem('studio_users_v5', JSON.stringify(users));
+        }
+        currentUser = cleanName;
+        localStorage.setItem('studio_active_user_v5', currentUser);
+        setupUsers();
+        loadUserData();
+        renderTable();
+        renderHistory();
+        generateMorningBot();
+    }
+
+    function switchUser() {
+        currentUser = document.getElementById('user-select').value;
+        localStorage.setItem('studio_active_user_v5', currentUser);
+        loadUserData();
+        renderTable();
+        renderHistory();
+        generateMorningBot();
+    }
+
+    function loadUserData() {
+        categories = JSON.parse(localStorage.getItem(`cat_v5_${currentUser}`)) || [
+            "Daily Operations", "Property Management", "G Project", "MSC", "General Tasks"
+        ];
+        tasks = JSON.parse(localStorage.getItem(`tasks_v5_${currentUser}`)) || [];
+        historyLogs = JSON.parse(localStorage.getItem(`history_v5_${currentUser}`)) || [];
+        populateCategories();
+    }
+
+    function saveUserData() {
+        localStorage.setItem(`cat_v5_${currentUser}`, JSON.stringify(categories));
+        localStorage.setItem(`tasks_v5_${currentUser}`, JSON.stringify(tasks));
+        
+        // 300-day Retention Limit (max 600 logs for morning + evening per day)
+        if (historyLogs.length > 600) {
+            historyLogs = historyLogs.slice(0, 600);
+        }
+        localStorage.setItem(`history_v5_${currentUser}`, JSON.stringify(historyLogs));
+    }
 
     function populateCategories() {
         const catSelect = document.getElementById('task-category');
@@ -193,22 +322,11 @@
         if (!catName) return alert('Enter a category name!');
         if (!categories.includes(catName)) {
             categories.push(catName);
-            localStorage.setItem('studio_categories', JSON.stringify(categories));
+            saveUserData();
             populateCategories();
             input.value = '';
             alert(`Added new pillar: ${catName}`);
         }
-    }
-
-    function saveAndRender() {
-        localStorage.setItem('studio_tasks_v4', JSON.stringify(tasks));
-        renderTable();
-        refreshOutput();
-    }
-
-    function refreshOutput() {
-        if (activeTab === 'morning') generateMorningBot();
-        else generateEveningBot();
     }
 
     function addNewTask() {
@@ -240,7 +358,9 @@
         blockerInput.value = '';
         priorityInput.checked = false;
 
-        saveAndRender();
+        saveUserData();
+        renderTable();
+        refreshOutput();
     }
 
     function toggleTimer(id) {
@@ -258,7 +378,9 @@
             task.startTime = Date.now();
             task.status = "In Progress";
         }
-        saveAndRender();
+        saveUserData();
+        renderTable();
+        refreshOutput();
     }
 
     function changeStatus(id, newStatus) {
@@ -268,14 +390,18 @@
                 toggleTimer(id);
             } else {
                 task.status = newStatus;
-                saveAndRender();
+                saveUserData();
+                renderTable();
+                refreshOutput();
             }
         }
     }
 
     function deleteTask(id) {
         tasks = tasks.filter(t => t.id !== id);
-        saveAndRender();
+        saveUserData();
+        renderTable();
+        refreshOutput();
     }
 
     function formatSecs(sec) {
@@ -289,7 +415,7 @@
         tbody.innerHTML = '';
 
         if (tasks.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b; padding:20px;">No tasks logged. Add one above!</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#64748b; padding:20px;">No tasks logged for ${currentUser}. Add one above!</td></tr>`;
             return;
         }
 
@@ -328,9 +454,20 @@
         });
     }
 
-    function getFormattedDate() {
-        const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
-        return new Date().toLocaleDateString('en-GB', options);
+    function getFormattedMYTDate() {
+        const options = {
+            timeZone: 'Asia/Kuala_Lumpur',
+            weekday: 'short',
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        };
+        return new Intl.DateTimeFormat('en-GB', options).format(new Date());
+    }
+
+    function refreshOutput() {
+        if (activeTab === 'morning') generateMorningBot();
+        else generateEveningBot();
     }
 
     function generateMorningBot() {
@@ -338,6 +475,7 @@
         document.getElementById('bot-title').innerText = "🌅 Morning Check-in Output";
         const q2Override = document.getElementById('q2-override').value.trim();
         const q3Override = document.getElementById('q3-override').value.trim();
+        const currentMotto = document.getElementById('motto-text').innerText;
 
         const active = tasks.filter(t => t.status !== "Completed");
         const priority = tasks.find(t => t.priority) || active[0];
@@ -364,25 +502,26 @@
         if (!q1Text) q1Text = "• Continuing daily operations and execution workflow.\n";
 
         let q2Text = q2Override ? q2Override : (priority ? `• ${priority.category}: ${priority.name}` : "• Standard task flow.");
-        let q3Text = q3Override ? q3Override : (blocked.length ? blocked.map(t => `• ${t.name}: ${t.blocker || 'Blocked'}`).join('\n') : "Nothing can stop me moving forward, only time matters.");
+        let q3Text = q3Override ? q3Override : (blocked.length ? blocked.map(t => `• ${t.name}: ${t.blocker || 'Pending progress'}`).join('\n') : "Nothing can stop me moving forward, only time matters.");
 
-        const text = `Morning Check-In | ${getFormattedDate()}\n\n1. What are you working on today?\n\n${q1Text.trim()}\n\n2. Which one matters most if today gets cut short?\n${q2Text}\n\n3. Anything blocking you?\n${q3Text}`;
+        const text = `Morning Check-In | ${getFormattedMYTDate()}\nUser: ${currentUser}\n\n1. What are you working on today?\n\n${q1Text.trim()}\n\n2. Which one matters most if today gets cut short?\n${q2Text}\n\n3. Anything blocking you?\n${q3Text}\n\n💡 Today's Focus Motto: ${currentMotto}`;
         document.getElementById('bot-output').innerText = text;
     }
 
     function generateEveningBot() {
         activeTab = 'evening';
-        document.getElementById('bot-title').innerText = "🌆 Evening Check-out Output";
+        document.getElementById('bot-title').innerText = "🌙 Evening Check-out Output";
         const q2Override = document.getElementById('q2-override').value.trim();
         const q3Override = document.getElementById('q3-override').value.trim();
+        const currentMotto = document.getElementById('motto-text').innerText;
 
         const done = tasks.filter(t => t.status === "Completed");
         const carry = tasks.filter(t => t.status !== "Completed");
         const proof = tasks.filter(t => t.proof);
 
         let q1Text = done.length 
-            ? done.map(t => `• ${t.name}${t.seconds ? ' (' + formatSecs(t.seconds) + ')' : ''}`).join('\n') 
-            : "• Progressed ongoing daily tasks & operations.";
+            ? done.map(t => `• ${t.name}`).join('\n') 
+            : "• Executed daily tasks and ongoing operations.";
 
         let q2Text = q2Override 
             ? q2Override 
@@ -390,10 +529,56 @@
 
         let q3Text = q3Override 
             ? q3Override 
-            : (carry.length ? carry.map(t => `• ${t.name} ${t.blocker ? '(' + t.blocker + ')' : ''}`).join('\n') : "Nothing carried over.");
+            : (carry.length ? carry.map(t => `• ${t.name}${t.blocker ? ' (' + t.blocker + ')' : ''}`).join('\n') : "Nothing carried over.");
 
-        const text = `Evening Check-Out | ${getFormattedDate()}\n\n1. What did you get done today?\n${q1Text}\n\n2. Anything to show for it?\n${q2Text}\n\n3. What's carrying over to tomorrow, if anything?\n${q3Text}`;
+        const text = `Evening Check-Out | ${getFormattedMYTDate()}\nUser: ${currentUser}\n\n1. What did you get done today?\n${q1Text}\n\n2. Anything to show for it?\n${q2Text}\n\n3. What's carrying over to tomorrow, if anything?\n${q3Text}\n\n💡 Daily Reflection: ${currentMotto}`;
         document.getElementById('bot-output').innerText = text;
+    }
+
+    function saveToHistory() {
+        const content = document.getElementById('bot-output').innerText;
+        if (!content) return;
+
+        const record = {
+            id: Date.now(),
+            date: getFormattedMYTDate(),
+            type: activeTab.toUpperCase(),
+            text: content
+        };
+
+        historyLogs.unshift(record);
+        saveUserData();
+        renderHistory();
+        alert(`Saved ${activeTab} report to ${currentUser}'s 300-day history archive! 🚀`);
+    }
+
+    function renderHistory() {
+        const container = document.getElementById('history-container');
+        container.innerHTML = '';
+
+        if (historyLogs.length === 0) {
+            container.innerHTML = `<div style="font-size:11px; color:#64748b;">No saved reports in 300-day archive for ${currentUser}.</div>`;
+            return;
+        }
+
+        historyLogs.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'history-card';
+            card.innerHTML = `
+                <div class="history-header">
+                    <strong>${item.date} (${item.type})</strong>
+                    <button class="btn btn-danger" style="padding:2px 4px; font-size:10px;" onclick="deleteHistory(${item.id})">Delete</button>
+                </div>
+                <div style="font-family:'JetBrains Mono', monospace; font-size:11px; color:#cbd5e1; white-space:pre-wrap; max-height:80px; overflow-y:auto; background:#00000033; padding:6px; border-radius:4px;">${escapeHtml(item.text)}</div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function deleteHistory(id) {
+        historyLogs = historyLogs.filter(h => h.id !== id);
+        saveUserData();
+        renderHistory();
     }
 
     function copyOutput() {
