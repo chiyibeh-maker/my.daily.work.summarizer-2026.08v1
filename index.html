@@ -832,8 +832,7 @@
         const blockedTasks = tasks.filter(t => t.status === "Blocked" || t.blocker);
 
         let q1 = activeTasks.length > 0 
-            ? activeTasks.slice(0, 4).map(t => `• ${t.name}`).join('
-')
+            ? activeTasks.slice(0, 4).map(t => `• ${t.name}`).join('\n')
             : "• Finishing up ongoing tasks";
 
         let q2 = priorityTask 
@@ -841,18 +840,10 @@
             : "• Standard daily workload";
 
         let q3 = blockedTasks.length > 0
-            ? blockedTasks.map(t => `• ${t.name}: ${t.blocker || 'Blocked'}`).join('
-')
+            ? blockedTasks.map(t => `• ${t.name}: ${t.blocker || 'Blocked'}`).join('\n')
             : "None";
 
-        let result = `1. What are you working on today?
-${q1}
-
-2. Which one matters most if today gets cut short?
-${q2}
-
-3. Anything blocking you?
-${q3}`;
+        let result = `1. What are you working on today?\n${q1}\n\n2. Which one matters most if today gets cut short?\n${q2}\n\n3. Anything blocking you?\n${q3}`;
 
         document.getElementById('bot-output-text').innerText = result;
     }
@@ -867,28 +858,18 @@ ${q3}`;
         const proofTasks = tasks.filter(t => t.proof.trim() !== "");
 
         let q1 = completedTasks.length > 0
-            ? completedTasks.map(t => `• ${t.name} (${formatTime(t.timeSpentSec)})`).join('
-')
+            ? completedTasks.map(t => `• ${t.name} (${formatTime(t.timeSpentSec)})`).join('\n')
             : "• Progressed ongoing tasks";
 
         let q2 = proofTasks.length > 0
-            ? proofTasks.map(t => `• ${t.name}: ${t.proof}`).join('
-')
+            ? proofTasks.map(t => `• ${t.name}: ${t.proof}`).join('\n')
             : "None";
 
         let q3 = carryOverTasks.length > 0
-            ? carryOverTasks.map(t => `• ${t.name} [${t.status}]`).join('
-')
+            ? carryOverTasks.map(t => `• ${t.name} [${t.status}]`).join('\n')
             : "Nothing carried over";
 
-        let result = `1. What did you get done today?
-${q1}
-
-2. Anything to show for it?
-${q2}
-
-3. What's carrying over to tomorrow, if anything?
-${q3}`;
+        let result = `1. What did you get done today?\n${q1}\n\n2. Anything to show for it?\n${q2}\n\n3. What's carrying over to tomorrow, if anything?\n${q3}`;
 
         document.getElementById('bot-output-text').innerText = result;
     }
@@ -896,7 +877,7 @@ ${q3}`;
     // Copy to Clipboard
     function copyBotOutput() {
         const text = document.getElementById('bot-output-text').innerText;
-        if (!text || text.includes('Click 'Morning Check-in'')) return;
+        if (!text || text.includes('Click \'Morning Check-in\'')) return;
 
         navigator.clipboard.writeText(text).then(() => {
             showToast("Copied bot summary to clipboard! 🚀");
