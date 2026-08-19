@@ -61,6 +61,8 @@
         
         .history-card { background: #0f172a; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-top: 8px; font-size: 12px; }
         .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        
+        .action-cell { display: flex; gap: 4px; align-items: center; }
     </style>
 </head>
 <body>
@@ -89,7 +91,6 @@
         </div>
     </header>
 
-    <!-- Quote & Motto Banner -->
     <div class="motto-banner">
         <div>💡 <strong>Daily Executive Motto:</strong> <span id="motto-text">"Focus on being productive instead of busy."</span></div>
         <button class="btn btn-secondary" type="button" id="next-motto-btn" style="padding: 2px 8px; font-size: 10px;">⚡ Next Quote</button>
@@ -106,6 +107,7 @@
             </div>
 
             <div class="task-form-box">
+                <input type="hidden" id="editing-task-id" value="">
                 <div class="form-group">
                     <label>Category / Pillar</label>
                     <select id="task-category"></select>
@@ -136,11 +138,11 @@
             <table>
                 <thead>
                     <tr>
-                        <th style="width: 20%;">Category</th>
-                        <th style="width: 35%;">Task & Details</th>
+                        <th style="width: 18%;">Category</th>
+                        <th style="width: 32%;">Task & Details</th>
                         <th style="width: 15%;">Status</th>
                         <th style="width: 15%;">Timer</th>
-                        <th style="width: 15%;">Action</th>
+                        <th style="width: 20%;">Action</th>
                     </tr>
                 </thead>
                 <tbody id="task-table-body"></tbody>
@@ -185,11 +187,11 @@
     ];
     let mottoIdx = 0;
 
-    let users = JSON.parse(localStorage.getItem('studio_users_v5')) || [
-        "User 1", "User 2", "User 3", "User 4", "User 5",
+    let users = JSON.parse(localStorage.getItem('studio_users_v7')) || [
+        "Chi Yi", "Tong Wei", "User 3", "User 4", "User 5",
         "User 6", "User 7", "User 8", "User 9", "User 10"
     ];
-    let currentUser = localStorage.getItem('studio_active_user_v5') || users[0];
+    let currentUser = localStorage.getItem('studio_active_user_v7') || users[0];
 
     let categories = [];
     let tasks = [];
@@ -205,7 +207,7 @@
         document.getElementById('new-user-btn').addEventListener('click', createNewUser);
         document.getElementById('user-select').addEventListener('change', switchUser);
         document.getElementById('add-cat-btn').addEventListener('click', addCategory);
-        document.getElementById('add-btn').addEventListener('click', addNewTask);
+        document.getElementById('add-btn').addEventListener('click', saveTaskFromForm);
         document.getElementById('morning-btn').addEventListener('click', generateMorningBot);
         document.getElementById('evening-btn').addEventListener('click', generateEveningBot);
         document.getElementById('copy-btn').addEventListener('click', copyOutput);
@@ -264,10 +266,10 @@
         const cleanName = name.trim();
         if (!users.includes(cleanName)) {
             users.push(cleanName);
-            localStorage.setItem('studio_users_v5', JSON.stringify(users));
+            localStorage.setItem('studio_users_v7', JSON.stringify(users));
         }
         currentUser = cleanName;
-        localStorage.setItem('studio_active_user_v5', currentUser);
+        localStorage.setItem('studio_active_user_v7', currentUser);
         setupUsers();
         loadUserData();
         renderTable();
@@ -277,7 +279,7 @@
 
     function switchUser() {
         currentUser = document.getElementById('user-select').value;
-        localStorage.setItem('studio_active_user_v5', currentUser);
+        localStorage.setItem('studio_active_user_v7', currentUser);
         loadUserData();
         renderTable();
         renderHistory();
@@ -285,23 +287,22 @@
     }
 
     function loadUserData() {
-        categories = JSON.parse(localStorage.getItem(`cat_v5_${currentUser}`)) || [
+        categories = JSON.parse(localStorage.getItem(`cat_v7_${currentUser}`)) || [
             "Daily Operations", "Property Management", "G Project", "MSC", "General Tasks"
         ];
-        tasks = JSON.parse(localStorage.getItem(`tasks_v5_${currentUser}`)) || [];
-        historyLogs = JSON.parse(localStorage.getItem(`history_v5_${currentUser}`)) || [];
+        tasks = JSON.parse(localStorage.getItem(`tasks_v7_${currentUser}`)) || [];
+        historyLogs = JSON.parse(localStorage.getItem(`history_v7_${currentUser}`)) || [];
         populateCategories();
     }
 
     function saveUserData() {
-        localStorage.setItem(`cat_v5_${currentUser}`, JSON.stringify(categories));
-        localStorage.setItem(`tasks_v5_${currentUser}`, JSON.stringify(tasks));
+        localStorage.setItem(`cat_v7_${currentUser}`, JSON.stringify(categories));
+        localStorage.setItem(`tasks_v7_${currentUser}`, JSON.stringify(tasks));
         
-        // 300-day Retention Limit (max 600 logs for morning + evening per day)
         if (historyLogs.length > 600) {
             historyLogs = historyLogs.slice(0, 600);
         }
-        localStorage.setItem(`history_v5_${currentUser}`, JSON.stringify(historyLogs));
+        localStorage.setItem(`history_v7_${currentUser}`, JSON.stringify(historyLogs));
     }
 
     function populateCategories() {
@@ -329,7 +330,8 @@
         }
     }
 
-    function addNewTask() {
+    function saveTaskFromForm() {
+        const editId = document.getElementById('editing-task-id').value;
         const catInput = document.getElementById('task-category');
         const nameInput = document.getElementById('task-name');
         const proofInput = document.getElementById('task-proof');
@@ -339,20 +341,35 @@
         const taskName = nameInput.value.trim();
         if (!taskName) return alert('Please enter task details!');
 
-        const newTask = {
-            id: Date.now(),
-            category: catInput.value,
-            name: taskName,
-            proof: proofInput.value.trim(),
-            blocker: blockerInput.value.trim(),
-            priority: priorityInput.checked,
-            status: "Planned",
-            seconds: 0,
-            timerOn: false,
-            startTime: null
-        };
+        if (editId) {
+            // Updating existing task
+            const task = tasks.find(t => t.id == editId);
+            if (task) {
+                task.category = catInput.value;
+                task.name = taskName;
+                task.proof = proofInput.value.trim();
+                task.blocker = blockerInput.value.trim();
+                task.priority = priorityInput.checked;
+            }
+            document.getElementById('editing-task-id').value = '';
+            document.getElementById('add-btn').innerText = '+ Add Task';
+        } else {
+            // Adding new task
+            const newTask = {
+                id: Date.now(),
+                category: catInput.value,
+                name: taskName,
+                proof: proofInput.value.trim(),
+                blocker: blockerInput.value.trim(),
+                priority: priorityInput.checked,
+                status: "Planned",
+                seconds: 0,
+                timerOn: false,
+                startTime: null
+            };
+            tasks.push(newTask);
+        }
 
-        tasks.push(newTask);
         nameInput.value = '';
         proofInput.value = '';
         blockerInput.value = '';
@@ -361,6 +378,21 @@
         saveUserData();
         renderTable();
         refreshOutput();
+    }
+
+    function editTask(id) {
+        const task = tasks.find(t => t.id === id);
+        if (!task) return;
+
+        document.getElementById('editing-task-id').value = task.id;
+        document.getElementById('task-category').value = task.category;
+        document.getElementById('task-name').value = task.name;
+        document.getElementById('task-proof').value = task.proof || '';
+        document.getElementById('task-blocker').value = task.blocker || '';
+        document.getElementById('task-priority').checked = task.priority;
+
+        document.getElementById('add-btn').innerText = '💾 Update Task';
+        document.getElementById('task-name').focus();
     }
 
     function toggleTimer(id) {
@@ -398,6 +430,7 @@
     }
 
     function deleteTask(id) {
+        if (!confirm('Are you sure you want to delete this task?')) return;
         tasks = tasks.filter(t => t.id !== id);
         saveUserData();
         renderTable();
@@ -448,7 +481,12 @@
                         ${task.timerOn ? '⏹ Stop' : '▶ Start'}
                     </button>
                 </td>
-                <td><button class="btn btn-danger" onclick="deleteTask(${task.id})">Delete</button></td>
+                <td>
+                    <div class="action-cell">
+                        <button class="btn btn-secondary" style="padding:4px 8px; font-size:11px;" onclick="editTask(${task.id})">✏️ Edit</button>
+                        <button class="btn btn-danger" style="padding:4px 8px; font-size:11px;" onclick="deleteTask(${task.id})">🗑️</button>
+                    </div>
+                </td>
             `;
             tbody.appendChild(tr);
         });
